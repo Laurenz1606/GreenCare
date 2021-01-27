@@ -7,5 +7,4 @@ router.get('/',(req, res) => {
     res.redirect(process.env.DASH_DOMAIN)
 })
 
-
 module.exports = router
