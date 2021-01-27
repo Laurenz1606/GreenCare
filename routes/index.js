@@ -1,8 +1,12 @@
 const express = require('express')
 const router = express.Router()
 
-router.get('/',(req, res) => {
-    res.render('index')
+const dotenv = require('dotenv').config()
+
+router.get('/', (req, res) => {
+    res.render('index', Object.assign({}, res.locals, {
+        title: 'Start'
+    }))
 })
 
 module.exports = router

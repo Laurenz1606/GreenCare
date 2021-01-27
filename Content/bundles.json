@@ -1,0 +1,17 @@
+[
+    {
+        "title":"Single",
+        "description":"Bundle for Singles",
+        "price": "1"
+    },
+    {
+        "title":"Couple",
+        "description":"Bundle for Couples",
+        "price": "1,5"
+    },
+    {
+        "title":"Family",
+        "description":"Bundle for Familys",
+        "price": "3"
+    }
+]

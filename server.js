@@ -26,4 +26,9 @@ app.use('/', indexRouter)
 app.use('/bundles', bundlesRouter)
 app.use('/dashboard', dashBoardRouter)
 
+app.use(function (req, res) {
+    res.status(404).render('404', Object.assign({}, res.locals, {
+        title: 'Seite nicht gefunden'
+    }))
+})
 app.listen(process.env.PORT || 3000)
