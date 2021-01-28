@@ -1,18 +1,20 @@
-<div class="container pt-5">
-    <h2 class="pt-5 pb-5 text-center">Bundles</h2>
+<div class="container">
+    <h2 class="text-center mt-3">Bundles</h2>
     <% bundles.forEach(bundle=> { %>
-        <span class="card mt-4" style="margin-left: auto;">
-        <a class="btn btn-default" href="/bundles/<%= bundle.title %>">
+        <div class="card mt-4">
+            <a class="btn btn-default" href="/bundles/<%= bundle.title %>">
                 <div class="card-body">
-                <h4 class="card-title text-center text-decoration-none"><%= bundle.title %></h4>
-                <div class="card-subtitle text-muted mb-2">
-                    <%= bundle.description %>
+                    <h4 class="card-title text-center text-decoration-none">
+                        <%= bundle.title %>
+                    </h4>
+                    <div class="card-subtitle text-muted">
+                        <%= bundle.description %>
+                    </div>
+                    <div class="card-text">
+                        <%= bundle.price %>€ / monatlich
+                    </div>
                 </div>
-                <div class="card-text mb-2">
-                <%= bundle.price %>€ / mntl.
-            </div>
-            </div>
-        </a>
-    </span>
-    <% }) %> 
+            </a>
+        </div>
+    <% }) %>
 </div>
