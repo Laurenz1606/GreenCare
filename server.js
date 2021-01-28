@@ -9,6 +9,8 @@ const indexRouter = require('./routes/index')
 const bundlesRouter = require('./routes/bundles')
 const dashBoardRouter = require('./routes/dashboard')
 
+let bundles = require('./Content/bundles.json')
+
 app.set('view engine', 'ejs')
 app.set('views', __dirname + '/views')
 app.set('layout', 'layouts/layout')
@@ -28,7 +30,8 @@ app.use('/dashboard', dashBoardRouter)
 
 app.use(function (req, res) {
     res.status(404).render('404', Object.assign({}, res.locals, {
-        title: 'Seite nicht gefunden'
+        title: 'Seite nicht gefunden',
+        bundles: bundles
     }))
 })
 

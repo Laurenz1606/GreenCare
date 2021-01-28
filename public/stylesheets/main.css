@@ -1,7 +1,8 @@
 :root {
     --bar-height: 72px;
-    --color-primary: rgb(98, 255, 169);
-    --color-primary-light: rgb(102, 255, 102);
+    --color-primary: rgba(0, 255, 106, 0.5);
+    --color-primary-light: rgba(0, 255, 0, 0.5);
+    --color-primary-text: rgb(0, 89, 255);
 }
 
 body {
@@ -104,6 +105,38 @@ body {
     opacity: 0.8;
 }
 
+.nav__link__1 {
+    position: unset;
+    margin-left: 2rem;
+}
+
+.card-list {
+    list-style: none;
+}
+
+.card-list-div {
+    display: flex;
+    justify-content: center;
+}
+
+.card-list li {
+    text-align: left;
+    position:inherit;
+}
+
+.card-list li:before {
+    content: '✓ ';
+    
+}
+
+.card-title {
+    color: black;
+}
+
+.card-text {
+    color: var(--color-primary-text);
+}
+
 @media screen and (min-width: 767px) {
     .bar__nav-toggle {
         display: none;
@@ -121,5 +154,10 @@ body {
     }
     .nav__link:not(:last-of-type) {
         margin-right: 24px;
+    }
+
+    .nav__link__1 {
+        position: absolute;
+        left: -1000px;
     }
 }

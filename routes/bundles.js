@@ -1,8 +1,9 @@
 const express = require('express')
 const router = express.Router()
 
+let bundles = require('../Content/bundles.json')
+
 router.get('/', (req, res) => {
-    let bundles = require('../Content/bundles.json')
     res.render('bundles/index', Object.assign({}, res.locals, {
         title: 'Bundles',
         bundles: bundles
@@ -17,10 +18,10 @@ router.get('/:id', (req, res) => {
     }
     if (titles.includes(req.params.id)) {
         var index = titles.findIndex(element => element.includes(req.params.id))
-        bundles = require('../Content/bundles.json')
         res.render('bundles/show', Object.assign({}, res.locals, {
             title: bundles[index].title,
-            bundle: bundles[index]
+            bundle: bundles[index],
+            bundles: bundles
         }))
         return
     }
@@ -33,7 +34,8 @@ router.get('/:id', (req, res) => {
     }
     else {
         res.status(404).render('404', Object.assign({}, res.locals, {
-            title: 'Seite nicht gefunden'
+            title: 'Seite nicht gefunden',
+            bundles: bundles
         }))
     }
 })
