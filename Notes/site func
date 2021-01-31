@@ -1,0 +1,30 @@
+Json pre Defined
+
+priceperAcc
+minAccs
+maxAccs
+
+!famaily accounts pre defined to minAccs
+
+
+
+Server side defined
+
+Bundle-uuid
+
+
+
+Denfinable 
+
+Site 1
+Accounts(normal pre defined, not by Family (range between (minAccs, maxAccs))
+
+Site 2
+Names(array of accounts length)
+password
+
+Site Last
+Price
+
+Step by Step guide 
+passing variables

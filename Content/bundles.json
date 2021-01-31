@@ -3,19 +3,34 @@
         "title": "Single",
         "description": "Bundle für Singles",
         "price": "1€",
-        "checks": ["1 Lizenz", "Günstigstes Bundle"]
+        "checks": ["1 Account", "Günstigstes Bundle", "Globales Ranking", "Premium Dashboard inklusiv"],
+        "cross": ["Kein Privates Ranking"],
+        "priceperAcc": "1",
+        "minAccs": "1",
+        "maxAccs": "1",
+        "setAcc": "1"
     },
     {
         "title": "Couple",
         "description": "Das Bundle für Paare",
         "price": "1,50€",
-        "checks": ["2 Lizenzen", "Ranking der Accounts"]
+        "checks": ["2 Accounts", "Ranking der Accounts", "Globales Ranking", "Privates Ranking"],
+        "cross": ["Premium Dashboard zubuchbar"],
+        "priceperAcc": "0.75",
+        "minAccs": "2",
+        "maxAccs": "2",
+        "setAcc": "2"
     },
     {
         "title": "Family",
         "description": "Das Bundle für die Ganze Familie",
         "price": "1,50€ - 3€",
-        "checks": ["bis 6 Lizenzen", "Ranking der Accounts"]
+        "checks": ["bis 6 Accounts", "Ranking der Accounts", "Globales Ranking", "Privates Ranking"],
+        "cross": ["Premium Dashboard zubuchbar"],
+        "priceperAcc": "0.5",
+        "minAccs": "3",
+        "maxAccs": "6",
+        "setAcc": ""
     }
 
 ]
