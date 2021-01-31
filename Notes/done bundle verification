@@ -1,0 +1,42 @@
+User:
+
+activ:
+activated = true
+linked = bundle id
+
+not activ:
+activated = false
+linked = nicht vorhanden
+
+Bundle:
+when user joins
+activated = true
+linked = bundle id
+
+
+edge cases:
+done bundle doesnt exist
+done user doesnt exist
+done check if user is in a bunde(not particular current)
+done user alredy joined this bundle
+done bundle is full
+
+let users leave bundle
+
+update bundle
+
+Laurenz Rausche
+laurenz.rausche@gmail.com
+12
+
+Uta Pöhl-Weber
+uta.poehl-weber@mk-bs.de
+12
+
+Leo Salewski
+leo.salewski@gmail.com
+12
+
+Eamorotti
+eamorotti02@gmail.com
+12

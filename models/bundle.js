@@ -5,10 +5,17 @@ const bundleSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
-  accs: {
-    type: Array,
-    required: true
+  LinkedAccs: {
+    type: [String]
   },
+  Admin: {
+    type: String, 
+    required: true
+  }, 
+  Name: {
+    type: String,
+    required: true
+  }
 })
 
 module.exports = mongoose.model('bundle', bundleSchema)

@@ -1,0 +1,11 @@
+<h1>Join a bundle</h1>
+    <% if (messages.error) { %>
+    <%= messages.error %>
+    <% } %>
+<form action="" method="POST">
+  <div>
+    <label for="email">Email</label>
+    <input type="email" id="email" name="email" required>
+  </div>
+  <button type="submit">Join</button>
+</form>

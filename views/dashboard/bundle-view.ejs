@@ -1,0 +1,10 @@
+<h1>Bundle: <%= locals.bundle.Name %> </h1>
+<table>
+<% for( let i = 0; i < locals.bundle.users.length; i++ ) { %>
+    <tr>
+        <td><%= locals.bundle.users[i].name %></td>
+        <td><%= locals.bundle.users[i].email %></td>
+    </tr>
+<% } %>
+</tbody>
+</table>
