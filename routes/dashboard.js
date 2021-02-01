@@ -187,8 +187,6 @@ router.post('/activate/:id', async (req, res) => {
                     if (!bundle.LinkedAccs.includes(usr._id)) {
                         if (!usr.activated) {
                             if (req.body.token == bundle.token) {
-                                console.log(req.body.token)
-                                console.log(bundle.token)
                                 if (linked.length < bundle.accNumber) {
                                     linked.push(usr._id)
                                     bundle.LinkedAccs = linked
@@ -326,6 +324,8 @@ router.delete('/leave', checkAuthenticated, async (req, res) => {
             user.linked = ""
             await user.save()
             bundle.LinkedAccs = linked
+            bundle.token = null
+            bundle.token = between(100000, 999999)
             await bundle.save()
             res.redirect('/dashboard')
         } else {
@@ -359,6 +359,8 @@ router.delete('/bundle/user', checkAuthenticated, async (req, res) => {
         user.linked = ""
         await user.save()
         bundle.LinkedAccs = linked
+        bundle.token = null
+        bundle.token = between(100000, 999999)
         await bundle.save()
         res.redirect('/dashboard/bundle')
     }
@@ -403,3 +405,5 @@ async function checkifUserinBundle(user) {
 }
 
 module.exports = router
+
+console
