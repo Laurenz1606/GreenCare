@@ -405,5 +405,3 @@ async function checkifUserinBundle(user) {
 }
 
 module.exports = router
-
-console
