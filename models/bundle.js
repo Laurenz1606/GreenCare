@@ -19,6 +19,10 @@ const bundleSchema = new mongoose.Schema({
   type: {
     type: String,
     required: true
+  }, 
+  token: {
+    type: Number,
+    required: true
   }
 })
 

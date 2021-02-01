@@ -71,7 +71,8 @@ router.get('/bundle', checkAuthenticated, async (req, res) => {
                 linkedUsers: bundle.LinkedAccs.length,
                 id: bundle._id,
                 admin: true,
-                adminID: adminID
+                adminID: adminID,
+                token: bundle.token
             }))
         } else {
             let admin = bundle.Admin
@@ -165,7 +166,8 @@ router.get('/activate/:id', async (req, res) => {
             if (result) {
                 res.render('dashboard/join', Object.assign({}, res.locals, {
                     title: 'Join',
-                    bundles: bundles
+                    bundles: bundles,
+                    mail: ""
                 }))
             }
         }
@@ -184,30 +186,43 @@ router.post('/activate/:id', async (req, res) => {
                     let usr = usrArray[0]
                     if (!bundle.LinkedAccs.includes(usr._id)) {
                         if (!usr.activated) {
-                            if (linked.length < bundle.accNumber) {
-                                linked.push(usr._id)
-                                bundle.LinkedAccs = linked
-                                let savedBundle = await bundle.save()
-                                usr.activated = true
-                                usr.linked = bundle._id
-                                let savedUser = await usr.save()
-                                res.render('dashboard/error', Object.assign({}, res.locals, {
-                                    title: 'Join',
-                                    bundles: bundles,
-                                    error: {
-                                        message: 'Du bist erfolgreich dem Bundle beigetreten',
-                                        redirect: '/dashboard',
-                                        redirectLocation: 'Zurück zum Dashboard'
-                                    }
-                                }))
+                            if (req.body.token == bundle.token) {
+                                console.log(req.body.token)
+                                console.log(bundle.token)
+                                if (linked.length < bundle.accNumber) {
+                                    linked.push(usr._id)
+                                    bundle.LinkedAccs = linked
+                                    let savedBundle = await bundle.save()
+                                    usr.activated = true
+                                    usr.linked = bundle._id
+                                    let savedUser = await usr.save()
+                                    res.render('dashboard/error', Object.assign({}, res.locals, {
+                                        title: 'Join',
+                                        bundles: bundles,
+                                        error: {
+                                            message: 'Du bist erfolgreich dem Bundle beigetreten',
+                                            redirect: '/dashboard',
+                                            redirectLocation: 'Zurück zum Dashboard'
+                                        }
+                                    }))
+                                } else {
+                                    res.render('dashboard/error', Object.assign({}, res.locals, {
+                                        title: 'Join',
+                                        bundles: bundles,
+                                        error: {
+                                            message: 'Dieses Bundle ist voll',
+                                            redirect: '/dashboard',
+                                            redirectLocation: 'Zurück zum Dashboard'
+                                        }
+                                    }))
+                                }
                             } else {
-                                res.render('dashboard/error', Object.assign({}, res.locals, {
+                                res.render('dashboard/join', Object.assign({}, res.locals, {
                                     title: 'Join',
                                     bundles: bundles,
-                                    error: {
-                                        message: 'Dieses Bundle ist voll',
-                                        redirect: '/dashboard',
-                                        redirectLocation: 'Zurück zum Dashboard'
+                                    mail: req.body.email,
+                                    messages: {
+                                        error: "Dein eingegebener Token ist falsch"
                                     }
                                 }))
                             }
@@ -258,7 +273,9 @@ router.post('/create', checkAuthenticated, async (req, res) => {
             accNumber: req.body.users,
             Admin: usr._id,
             Name: req.body.name,
-            type: req.body.type
+            type: req.body.type,
+            token: between(100000, 999999)
+
         })
         newBundle = await constructedBundle.save()
         let admin = await User.findById(newBundle.Admin)
@@ -277,7 +294,8 @@ router.post('/create', checkAuthenticated, async (req, res) => {
             name: newBundle.Name,
             id: newBundle._id,
             type: newBundle.type,
-            users: newBundle.accNumber
+            users: newBundle.accNumber,
+            token: newBundle.token
         }))
     } else {
         res.render('dashboard/error', Object.assign({}, res.locals, {
@@ -360,6 +378,12 @@ function checkAuthenticated(req, res, next) {
     }
 
     res.redirect('/dashboard/login')
+}
+
+function between(min, max) {
+    return Math.floor(
+        Math.random() * (max - min) + min
+    )
 }
 
 function checkNotAuthenticated(req, res, next) {

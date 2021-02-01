@@ -1,26 +1,53 @@
-<h1>Bundle: <%= locals.bundle.Name %>
-</h1>
+<div class="container">
+    <div class="card mb-4 mt-3">
+        <div class="card-body">
+<h2 class="card-title text-center"><%= locals.bundle.Name %>
+</h2>
+<div class="card-subtitle text-muted">
 <p>Bundle-Art: <%= type %>
 </p>
 <p>Bundle-Benutzer: <%= linkedUsers %>/<%= users %>
 </p>
-<table>
+<% if (users !=1) { %>
+    <% if (admin) { %>
+        <p>Join Link:</p>
+        <p>join.green-care.info/<%= id %></p>
+        <p class="hide" id="copy">Hey, trete doch meinem Bundle bei join.green-care.info/<%= id %> der Token ist <%= token %></p>
+        <p class="mb-1">Token:</p>
+        <h3 id="p2" class="mb-3"><%= token %></h3>
+        <button class="btn btn-success" onclick="copyToClipboard('#copy')">Einladung kopieren</button>
+    <% } %>
+<% } %>
+<script>
+    function copyToClipboard(element) {
+  var $temp = $("<input>");
+  $("body").append($temp);
+  $temp.val($(element).text()).select();
+  document.execCommand("copy");
+  $temp.remove();
+}
+</script>
+</div>
+</div>
+</div>
+<p>Benutzer:</p>
+<table class="table table-striped">
     <thead>
-        <tr>
-            <th>
+    </thead>
+    <tbody>
+        <tr class="bundleuser__list">
+            <th scope="col">
                 <%= locals.bundle.users[0].name %>
             </th>
-            <th>
+            <th scope="col">
                 <%= locals.bundle.users[0].email %>
             </th>    
             <% if (admin) { %>
-                <th></th>
+                <th scope="col"></th>
             <% } %>
         </tr>
-    </thead>
-    <tbody>
         <% for( let i=1; i < locals.bundle.users.length; i++ ) { %>
-            <tr>
+            <tr class="bundleuser__list">
                 <td>
                     <%= locals.bundle.users[i].name %>
                 </td>
@@ -32,7 +59,8 @@
                         <form action="/dashboard/bundle/user?_method=DELETE" method="POST">
                             <input name="id" type="hidden" value="<%= locals.bundle.users[i]._id %>">
                             <input name="Admin" type="hidden" value="<%= locals.adminID %>">
-                            <button type="submit">🗙</button>
+                            <button class="btn btn-danger cross-button" type="submit">
+                                <i class="material-icons cross-icon">close</i></button>
                         </form>
                     </td>
                 <% } %>
@@ -40,10 +68,9 @@
         <% } %>
     </tbody>
 </table>
-<% if (users !=1) { %>
+<span class="show-on-mobile text-muted">
     <% if (admin) { %>
-        <p>Join Link :</p>
-        <p>join.green-care.info/<%= id %>
-        </p>
+    Zum bearbeiten der User benutze einen PC
     <% } %>
-<% } %>
+</span>
+</div>

@@ -5,7 +5,11 @@
 <form action="" method="POST">
   <div>
     <label for="email">Email</label>
-    <input type="email" id="email" name="email" required>
+    <input type="email" id="email" name="email" value="<%= mail %>" required>
+  </div>
+  <div>
+    <label for="email">Token</label>
+    <input type="number" id="token" name="token" required>
   </div>
   <button type="submit">Join</button>
 </form>
