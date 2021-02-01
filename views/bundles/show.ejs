@@ -1,0 +1,45 @@
+<h1>
+    <%= bundle.title %>
+</h1>
+<form action="/dashboard/create" method="POST">
+    <input type="hidden" name="type" id="type" value="<%= bundle.title %>">
+    <% if (bundle.minAccs !=bundle.maxAccs) { %>
+        <div>
+            <input name="ppa" id="ppa" value="<%= bundle.priceperAcc %>" type="hidden">
+            <input name="users" type="range" min="<%= bundle.minAccs %>" max="<%= bundle.maxAccs%>"
+                value="<%= bundle.maxAccs%>" class="slider" id="users">
+            <p>Benutzer: <span id="userstext"></span></p>
+            <p>Preis: <span id="price"></span>€ / monatlich</p>
+        </div>
+
+        <script>
+            var slider = document.getElementById("users");
+            var output = document.getElementById("userstext");
+            var price = document.getElementById("price");
+            var priceperacc = document.getElementById("ppa");
+            var pricewithcomma = slider.value * priceperacc.value
+            output.innerHTML = slider.value; // Display the default slider value
+            price.innerHTML = pricewithcomma.toString().split('.').join(',');
+
+            // Update the current slider value (each time you drag the slider handle)
+            slider.oninput = function () {
+                output.innerHTML = this.value;
+                pricewithcomma = this.value * priceperacc.value
+                price.innerHTML = pricewithcomma.toString().split('.').join(',');
+            }
+        </script>
+        <% } else { %>
+            <input type="hidden" name="users" value="<%= bundle.setAcc %>">
+            <p>Benutzer: <span id="userstext">
+                    <%= bundle.setAcc %>
+                </span></p>
+            <p>Preis: <span id="price">
+                    <%= (bundle.priceperAcc * bundle.setAcc).toString().split('.').join(','); %>€ / monatlich
+                </span></p>
+        <% } %>
+    <div>
+        <label for="name">Bundle-Name:</label>
+        <input type="text" id="name" name="name" required>
+    </div>
+    <button type="submit">Buy</button>
+</form>

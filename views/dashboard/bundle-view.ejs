@@ -1,10 +1,49 @@
-<h1>Bundle: <%= locals.bundle.Name %> </h1>
+<h1>Bundle: <%= locals.bundle.Name %>
+</h1>
+<p>Bundle-Art: <%= type %>
+</p>
+<p>Bundle-Benutzer: <%= linkedUsers %>/<%= users %>
+</p>
 <table>
-<% for( let i = 0; i < locals.bundle.users.length; i++ ) { %>
-    <tr>
-        <td><%= locals.bundle.users[i].name %></td>
-        <td><%= locals.bundle.users[i].email %></td>
-    </tr>
-<% } %>
-</tbody>
+    <thead>
+        <tr>
+            <th>
+                <%= locals.bundle.users[0].name %>
+            </th>
+            <th>
+                <%= locals.bundle.users[0].email %>
+            </th>    
+            <% if (admin) { %>
+                <th></th>
+            <% } %>
+        </tr>
+    </thead>
+    <tbody>
+        <% for( let i=1; i < locals.bundle.users.length; i++ ) { %>
+            <tr>
+                <td>
+                    <%= locals.bundle.users[i].name %>
+                </td>
+                <td>
+                    <%= locals.bundle.users[i].email %>
+                </td>
+                <% if (admin) { %>
+                    <td>
+                        <form action="/dashboard/bundle/user?_method=DELETE" method="POST">
+                            <input name="id" type="hidden" value="<%= locals.bundle.users[i]._id %>">
+                            <input name="Admin" type="hidden" value="<%= locals.adminID %>">
+                            <button type="submit">🗙</button>
+                        </form>
+                    </td>
+                <% } %>
+            </tr>
+        <% } %>
+    </tbody>
 </table>
+<% if (users !=1) { %>
+    <% if (admin) { %>
+        <p>Join Link :</p>
+        <p>join.green-care.info/<%= id %>
+        </p>
+    <% } %>
+<% } %>

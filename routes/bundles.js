@@ -1,7 +1,5 @@
 const express = require('express')
 const router = express.Router()
-const { v4: uuidv4 } = require('uuid')
-const url = require('url');    
 
 let bundles = require('../Content/bundles.json')
 
@@ -12,7 +10,7 @@ router.get('/', (req, res) => {
     }))
 })
 
-router.get('/:id', (req, res) => {
+router.get('/:id', checkAuthenticated, (req, res) => {
     let titles = []
     let bundles = require('../Content/bundles.json')
     for (var i = 0; i < bundles.length; i++) {
@@ -50,4 +48,11 @@ function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+function checkAuthenticated(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next()
+    }
+
+    res.redirect('/dashboard/login')
+}
 module.exports = router

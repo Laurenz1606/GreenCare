@@ -1,0 +1,9 @@
+<h1>Bundle-Name: <%= locals.name %></h1>
+<p>Admin: <%= locals.admin %></p>
+<p>Bundle-art: <%= type %></p>
+<p>Maximale Benutzer: <%= users %></p>
+<p>Id: <%= locals.id %></p>
+<% if (users != 1) { %>
+<p>Join Link:</p>
+<p>join.green-care.info/<%= locals.id %></p>
+<% } %>

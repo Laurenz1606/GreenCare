@@ -2,4 +2,11 @@
 <form action="/dashboard/logout?_method=DELETE" method="POST">
     <button type="submit">Log Out</button>
 </form>
-<a href="/dashboard/bundle">Bundle</a>
+<% if(locals.bundle) { %>
+<a href="/dashboard/bundle">Dein Bundle</a>
+<form action="/dashboard/leave?_method=DELETE" method="POST">
+    <button type="submit">Leave bundle</button>
+</form>
+<% } else {%>
+    <a href="/bundles">Kauf dir ein Bundle</a>
+<% } %>
