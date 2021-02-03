@@ -18,10 +18,28 @@ initializePassport(passport,
     async id => await User.findById(id)
 )
 
+router.get('/edit', checkAuthenticated, async (req, res) => {
+    let usr = await req.user
+    usr = await User.findById(usr._id)  
+    res.render('dashboard/edit', Object.assign({}, res.locals, {
+        title: 'Edit',
+        bundles: bundles,
+        userData: usr
+    }))
+})
+
+router.post('/updateUserinfo', checkAuthenticated, async (req, res) => {
+    let usr = await req.user
+    usr.name = req.body.name
+    let updatedUser = await usr.save()
+    res.redirect('/dashboard')
+})
 
 router.get('/', checkAuthenticated, async (req, res) => {
     let usr = await req.user
     let sync = false
+    let leaveError = false
+    let alredy = false
     if (usr.activated == true) {
         if (mongoose.Types.ObjectId.isValid(usr.linked)) {
             let bundlesync = await checkifUserinBundle(usr)
@@ -33,16 +51,30 @@ router.get('/', checkAuthenticated, async (req, res) => {
         }
     } else {
     }
+    if(req.query.leavedis == 1) {
+        leaveError = true
+    }
+    if(req.query.alredy == 1) {
+        alredy = true
+    }
     res.render('dashboard/dashboard', Object.assign({}, res.locals, {
         title: 'Dashboard',
         bundles: bundles,
         name: usr.name,
-        bundle: sync
+        bundle: sync,
+        leaveDisable: leaveError,
+        alredy: alredy
     }))
 })
 
 router.get('/bundle', checkAuthenticated, async (req, res) => {
     let usr = await req.user
+    let deletetest = false
+    let deleted = []
+    if (req.query.deleted) {
+        deleted = await User.findById(req.query.deleted)
+        deletetest = true
+    }
     if (usr.activated) {
         let bundle = await Bundle.findById(usr.linked)
         if (usr._id == bundle.Admin) {
@@ -63,7 +95,7 @@ router.get('/bundle', checkAuthenticated, async (req, res) => {
                 users: bundle.users
             }
             res.render('dashboard/bundle-view', Object.assign({}, res.locals, {
-                title: 'Login',
+                title: 'Bundle',
                 bundles: bundles,
                 bundle: putBundle,
                 type: bundle.type,
@@ -72,7 +104,9 @@ router.get('/bundle', checkAuthenticated, async (req, res) => {
                 id: bundle._id,
                 admin: true,
                 adminID: adminID,
-                token: bundle.token
+                token: bundle.token,
+                isdeleted: deletetest,
+                deletedUser: deleted,
             }))
         } else {
             let admin = bundle.Admin
@@ -92,7 +126,7 @@ router.get('/bundle', checkAuthenticated, async (req, res) => {
                 users: bundle.users
             }
             res.render('dashboard/bundle-view', Object.assign({}, res.locals, {
-                title: 'Login',
+                title: 'Bundle',
                 bundles: bundles,
                 bundle: putBundle,
                 type: bundle.type,
@@ -100,7 +134,8 @@ router.get('/bundle', checkAuthenticated, async (req, res) => {
                 linkedUsers: bundle.LinkedAccs.length,
                 id: bundle._id,
                 admin: false,
-                adminID: adminID
+                adminID: adminID,
+                isdeleted: false
             }))
         }
     } else res.redirect('/dashboard')
@@ -153,15 +188,16 @@ router.get('/activate/:id', async (req, res) => {
     await Bundle.exists({ _id: req.params.id }, function (err, result) {
         if (err) {
             exists = false
-            res.render('dashboard/error', Object.assign({}, res.locals, {
-                title: 'Join',
-                bundles: bundles,
-                error: {
-                    message: 'Dein Bundle existiert nicht, überprüfe deinen Link nocheinmal',
-                    redirect: '/dashboard',
-                    redirectLocation: 'Zurück zum Dashboard'
-                }
-            }))
+            res.redirect('/dashboard')
+            // res.render('dashboard/error', Object.assign({}, res.locals, {
+            //     title: 'Join',
+            //     bundles: bundles,
+            //     error: {
+            //         message: 'Dein Bundle existiert nicht, überprüfe deinen Link nocheinmal',
+            //         redirect: '/dashboard',
+            //         redirectLocation: 'Zurück zum Dashboard'
+            //     }
+            // }))
         } else {
             if (result) {
                 res.render('dashboard/join', Object.assign({}, res.locals, {
@@ -194,24 +230,24 @@ router.post('/activate/:id', async (req, res) => {
                                     usr.activated = true
                                     usr.linked = bundle._id
                                     let savedUser = await usr.save()
-                                    res.render('dashboard/error', Object.assign({}, res.locals, {
-                                        title: 'Join',
-                                        bundles: bundles,
-                                        error: {
-                                            message: 'Du bist erfolgreich dem Bundle beigetreten',
-                                            redirect: '/dashboard',
-                                            redirectLocation: 'Zurück zum Dashboard'
-                                        }
-                                    }))
+                                    res.redirect('/dashboard/bundle')
+                                    // res.render('dashboard/error', Object.assign({}, res.locals, {
+                                    //     title: 'Join',
+                                    //     bundles: bundles,
+                                    //     error: {
+                                    //         message: 'Du bist erfolgreich dem Bundle beigetreten',
+                                    //         redirect: '/dashboard',
+                                    //         redirectLocation: 'Zurück zum Dashboard'
+                                    //     }
+                                    // }))
                                 } else {
-                                    res.render('dashboard/error', Object.assign({}, res.locals, {
+                                    res.render('dashboard/join', Object.assign({}, res.locals, {
                                         title: 'Join',
                                         bundles: bundles,
-                                        error: {
-                                            message: 'Dieses Bundle ist voll',
-                                            redirect: '/dashboard',
-                                            redirectLocation: 'Zurück zum Dashboard'
-                                        }
+                                        messages: {
+                                            error: "Dieses Bundle ist voll"
+                                        },
+                                        mail: ""
                                     }))
                                 }
                             } else {
@@ -221,40 +257,38 @@ router.post('/activate/:id', async (req, res) => {
                                     mail: req.body.email,
                                     messages: {
                                         error: "Dein eingegebener Token ist falsch"
-                                    }
+                                    },
+                                    mail: ""
                                 }))
                             }
                         } else {
-                            res.render('dashboard/error', Object.assign({}, res.locals, {
+                            res.render('dashboard/join', Object.assign({}, res.locals, {
                                 title: 'Join',
                                 bundles: bundles,
-                                error: {
-                                    message: 'Du bist bereits in einem Bundle',
-                                    redirect: '/dashboard',
-                                    redirectLocation: 'Zurück zum Dashboard'
-                                }
+                                messages: {
+                                    error: "Dieder Benutzer ist bereits in einem Bundle"
+                                },
+                                mail: ""
                             }))
                         }
                     } else {
-                        res.render('dashboard/error', Object.assign({}, res.locals, {
+                        res.render('dashboard/join', Object.assign({}, res.locals, {
                             title: 'Join',
                             bundles: bundles,
-                            error: {
-                                message: 'Du bist bereits diesem Bundle Beigetreten',
-                                redirect: '/dashboard',
-                                redirectLocation: 'Zurück zum Dashboard'
-                            }
+                            messages: {
+                                error: "Dieder Benutzer ist bereits in diesem Bundle"
+                            },
+                            mail: ""
                         }))
                     }
                 } else {
-                    res.render('dashboard/error', Object.assign({}, res.locals, {
+                    res.render('dashboard/join', Object.assign({}, res.locals, {
                         title: 'Join',
                         bundles: bundles,
-                        error: {
-                            message: 'Dein Benutzer existiert nicht, wenn du dich verschrieben haben solltest, gehe erneut auf den Link zum beitreten und gebe deine Email ein',
-                            redirect: '/dashboard/register',
-                            redirectLocation: 'Hier account erstellen'
-                        }
+                        messages: {
+                            error: "Dieser Benutzer existiert nicht, wenn du dich verschrieben haben solltest, überprüfe deine Daten nocheinmal"
+                        },
+                        mail: ""
                     }))
                 }
             }
@@ -285,26 +319,28 @@ router.post('/create', checkAuthenticated, async (req, res) => {
         admin.activated = true
         admin.linked = newBundle._id
         await admin.save()
-        res.render('dashboard/create-bundle', Object.assign({}, res.locals, {
-            title: 'Join',
-            bundles: bundles,
-            admin: admin.name,
-            name: newBundle.Name,
-            id: newBundle._id,
-            type: newBundle.type,
-            users: newBundle.accNumber,
-            token: newBundle.token
-        }))
+        res.redirect('/dashboard')
+        // res.render('dashboard/create-bundle', Object.assign({}, res.locals, {
+        //     title: 'Create Bundle',
+        //     bundles: bundles,
+        //     admin: admin.name,
+        //     name: newBundle.Name,
+        //     id: newBundle._id,
+        //     type: newBundle.type,
+        //     users: newBundle.accNumber,
+        //     token: newBundle.token
+        // }))
     } else {
-        res.render('dashboard/error', Object.assign({}, res.locals, {
-            title: 'Join',
-            bundles: bundles,
-            error: {
-                message: 'Du besitzt bereits ein Bundle',
-                redirect: '/dashboard/bundle',
-                redirectLocation: 'Zu deinem Bundle'
-            }
-        }))
+        res.redirect('/dashboard?alredy=1')
+        // res.render('dashboard/error', Object.assign({}, res.locals, {
+        //     title: 'Error',
+        //     bundles: bundles,
+        //     error: {
+        //         message: 'Du besitzt bereits ein Bundle',
+        //         redirect: '/dashboard/bundle',
+        //         redirectLocation: 'Zu deinem Bundle'
+        //     }
+        // }))
     }
 })
 
@@ -329,15 +365,7 @@ router.delete('/leave', checkAuthenticated, async (req, res) => {
             await bundle.save()
             res.redirect('/dashboard')
         } else {
-            res.render('dashboard/error', Object.assign({}, res.locals, {
-                title: 'Join',
-                bundles: bundles,
-                error: {
-                    message: 'Du bist der Admin des Bundles, du kannst es nicht verlassen',
-                    redirect: '/dashboard',
-                    redirectLocation: 'Zurück zum Dashboard'
-                }
-            }))
+            res.redirect('/dashboard?leavedis=1')
         }
     } else {
         res.redirect('/dashboard')
@@ -362,7 +390,7 @@ router.delete('/bundle/user', checkAuthenticated, async (req, res) => {
         bundle.token = null
         bundle.token = between(100000, 999999)
         await bundle.save()
-        res.redirect('/dashboard/bundle')
+        res.redirect('/dashboard/bundle?deleted=' + req.body.id)
     }
     else {
         res.redirect('/dashboard/bundle')

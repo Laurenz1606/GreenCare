@@ -1,12 +1,26 @@
-<h1>Hi <%= locals.name %> </h1>
-<form action="/dashboard/logout?_method=DELETE" method="POST">
-    <button type="submit">Log Out</button>
-</form>
-<% if(locals.bundle) { %>
-<a href="/dashboard/bundle">Dein Bundle</a>
-<form action="/dashboard/leave?_method=DELETE" method="POST">
-    <button type="submit">Leave bundle</button>
-</form>
-<% } else {%>
-    <a href="/bundles">Kauf dir ein Bundle</a>
-<% } %>
+<div class="container">
+    <h1>Hi <%= locals.name %> </h1>
+    <% if (leaveDisable==true) { %>
+        <div class="alert alert-danger alert-dismissible fade show mt-4">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <strong>Fehler!</strong> Als admin kannst du das Bundle nicht verlassen.
+        </div>
+        <% } %>
+        <% if (alredy==true) { %>
+            <div class="alert alert-danger alert-dismissible fade show mt-4">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <strong>Fehler!</strong> Du besitz bereits ein Bundle.
+            </div>
+            <% } %>
+        <form action="/dashboard/logout?_method=DELETE" method="POST">
+            <button type="submit">Log Out</button>
+        </form>
+        <% if(locals.bundle) { %>
+            <a href="/dashboard/bundle">Dein Bundle</a>
+            <form action="/dashboard/leave?_method=DELETE" method="POST">
+                <button type="submit">Leave bundle</button>
+            </form>
+            <% } else {%>
+                <a href="/bundles">Kauf dir ein Bundle</a>
+                <% } %>
+</div>
