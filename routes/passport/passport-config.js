@@ -8,7 +8,7 @@ function initialize(passport, getUserByEmail, getUserById) {
         user = result
     })
     if (user == null) {
-      return done(null, false, { message: 'Dieser User existiert nicht' })
+      return done(null, false, { message: 'Dieser Benutzer existiert nicht' })
     }
     if (bcrypt.compareSync(password, user.password)) {
       return done(null, user)

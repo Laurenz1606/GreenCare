@@ -8,7 +8,7 @@ const express = require('express')
 const app = express()
 const expressLayouts = require('express-ejs-layouts')
 const methodOverride = require('method-override')
-
+const bodyParser = require('body-parser')
 
 const indexRouter = require('./routes/index')
 const bundlesRouter = require('./routes/bundles')
@@ -38,7 +38,6 @@ app.use(session({
 }))
 app.use(passport.initialize())
 app.use(passport.session())
-
 app.use('/', indexRouter)
 app.use('/dashboard', dashBoardRouter)
 app.use('/bundles', bundlesRouter)

@@ -14,6 +14,23 @@ body {
     display: none;
 }
 
+.login__button {
+    padding-left: 0;
+}
+
+.form_dash {
+    float: right;
+    position: relative;
+    top: 0;
+}
+
+.dash_ui_buttons {
+    height: 41px;
+    width: 41px;
+    padding-left: 8px;
+    padding-top: 7px ;
+}
+
 .second {
     width: 100%;
     height: 1000px;
@@ -208,9 +225,11 @@ body {
 }
 
 @media screen and (min-width: 767px) {
+
     .bar__nav-toggle {
         display: none;
     }
+
     .nav {
         display: initial;
         position: static;
@@ -219,25 +238,32 @@ body {
         padding: unset;
         background: transparent;
     }
+
     .nav__link {
         border-bottom: none;
     }
+
     .nav__link:not(:last-of-type) {
         margin-right: 24px;
     }
+
     .nav__link__bundle {
         border-bottom: none;
         margin-right: 24px;
     }
+
     .nav__link__1 {
         display: none;
     }
+
     .cross-button {
         display: unset;
         height: 37px;
         width: 50px;
     }
+
     .show-on-mobile {
         display: none;
     }
+    
 }

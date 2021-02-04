@@ -20,17 +20,24 @@ initializePassport(passport,
 
 router.get('/edit', checkAuthenticated, async (req, res) => {
     let usr = await req.user
-    usr = await User.findById(usr._id)  
+    usr = await User.findById(usr._id)
     res.render('dashboard/edit', Object.assign({}, res.locals, {
         title: 'Edit',
         bundles: bundles,
-        userData: usr
+        userData: usr,
+        private: usr.private
     }))
 })
 
 router.post('/updateUserinfo', checkAuthenticated, async (req, res) => {
     let usr = await req.user
     usr.name = req.body.name
+    console.log(req.body.private)
+    if(req.body.private == 'on') {
+        usr.private = true
+    } else {
+        usr.private = false
+    }
     let updatedUser = await usr.save()
     res.redirect('/dashboard')
 })
@@ -51,10 +58,10 @@ router.get('/', checkAuthenticated, async (req, res) => {
         }
     } else {
     }
-    if(req.query.leavedis == 1) {
+    if (req.query.leavedis == 1) {
         leaveError = true
     }
-    if(req.query.alredy == 1) {
+    if (req.query.alredy == 1) {
         alredy = true
     }
     res.render('dashboard/dashboard', Object.assign({}, res.locals, {
@@ -143,7 +150,7 @@ router.get('/bundle', checkAuthenticated, async (req, res) => {
 
 router.get('/login', checkNotAuthenticated, (req, res) => {
     res.render('dashboard/login', Object.assign({}, res.locals, {
-        title: 'Login',
+        title: 'Anmelden',
         bundles: bundles
     }))
 })
@@ -156,7 +163,7 @@ router.post('/login', checkNotAuthenticated, passport.authenticate('local', {
 
 router.get('/register', checkNotAuthenticated, (req, res) => {
     res.render('dashboard/register', Object.assign({}, res.locals, {
-        title: 'Register',
+        title: 'Registrieren',
         bundles: bundles
     }))
 })
@@ -169,7 +176,8 @@ router.post('/register', checkNotAuthenticated, async (req, res) => {
             name: req.body.name,
             email: req.body.email,
             password: hashedPassword,
-            activated: false
+            activated: false,
+            private: false
         })
         const newUser = await user.save()
         res.redirect('/dashboard/login')
@@ -189,15 +197,6 @@ router.get('/activate/:id', async (req, res) => {
         if (err) {
             exists = false
             res.redirect('/dashboard')
-            // res.render('dashboard/error', Object.assign({}, res.locals, {
-            //     title: 'Join',
-            //     bundles: bundles,
-            //     error: {
-            //         message: 'Dein Bundle existiert nicht, überprüfe deinen Link nocheinmal',
-            //         redirect: '/dashboard',
-            //         redirectLocation: 'Zurück zum Dashboard'
-            //     }
-            // }))
         } else {
             if (result) {
                 res.render('dashboard/join', Object.assign({}, res.locals, {
@@ -231,15 +230,6 @@ router.post('/activate/:id', async (req, res) => {
                                     usr.linked = bundle._id
                                     let savedUser = await usr.save()
                                     res.redirect('/dashboard/bundle')
-                                    // res.render('dashboard/error', Object.assign({}, res.locals, {
-                                    //     title: 'Join',
-                                    //     bundles: bundles,
-                                    //     error: {
-                                    //         message: 'Du bist erfolgreich dem Bundle beigetreten',
-                                    //         redirect: '/dashboard',
-                                    //         redirectLocation: 'Zurück zum Dashboard'
-                                    //     }
-                                    // }))
                                 } else {
                                     res.render('dashboard/join', Object.assign({}, res.locals, {
                                         title: 'Join',
@@ -266,7 +256,7 @@ router.post('/activate/:id', async (req, res) => {
                                 title: 'Join',
                                 bundles: bundles,
                                 messages: {
-                                    error: "Dieder Benutzer ist bereits in einem Bundle"
+                                    error: "Dieser Benutzer ist bereits in einem Bundle"
                                 },
                                 mail: ""
                             }))
@@ -320,27 +310,8 @@ router.post('/create', checkAuthenticated, async (req, res) => {
         admin.linked = newBundle._id
         await admin.save()
         res.redirect('/dashboard')
-        // res.render('dashboard/create-bundle', Object.assign({}, res.locals, {
-        //     title: 'Create Bundle',
-        //     bundles: bundles,
-        //     admin: admin.name,
-        //     name: newBundle.Name,
-        //     id: newBundle._id,
-        //     type: newBundle.type,
-        //     users: newBundle.accNumber,
-        //     token: newBundle.token
-        // }))
     } else {
         res.redirect('/dashboard?alredy=1')
-        // res.render('dashboard/error', Object.assign({}, res.locals, {
-        //     title: 'Error',
-        //     bundles: bundles,
-        //     error: {
-        //         message: 'Du besitzt bereits ein Bundle',
-        //         redirect: '/dashboard/bundle',
-        //         redirectLocation: 'Zu deinem Bundle'
-        //     }
-        // }))
     }
 })
 

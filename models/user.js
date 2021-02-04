@@ -20,6 +20,10 @@ const userSchema = new mongoose.Schema({
     linked: {
         type: String,
     },
+    private: {
+        type: Boolean,
+        required: true
+    }
 })
 
 module.exports = mongoose.model('User', userSchema)

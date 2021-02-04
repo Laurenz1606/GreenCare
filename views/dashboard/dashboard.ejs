@@ -1,4 +1,5 @@
 <div class="container">
+    <%- include('dashheader') %> 
     <h1>Hi <%= locals.name %> </h1>
     <% if (leaveDisable==true) { %>
         <div class="alert alert-danger alert-dismissible fade show mt-4">
@@ -12,14 +13,13 @@
                 <strong>Fehler!</strong> Du besitz bereits ein Bundle.
             </div>
             <% } %>
-        <form action="/dashboard/logout?_method=DELETE" method="POST">
-            <button type="submit">Log Out</button>
-        </form>
         <% if(locals.bundle) { %>
+            <div class="card mx-5 my-3">
             <a href="/dashboard/bundle">Dein Bundle</a>
             <form action="/dashboard/leave?_method=DELETE" method="POST">
                 <button type="submit">Leave bundle</button>
             </form>
+    </div>
             <% } else {%>
                 <a href="/bundles">Kauf dir ein Bundle</a>
                 <% } %>
