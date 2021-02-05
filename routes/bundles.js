@@ -55,4 +55,5 @@ function checkAuthenticated(req, res, next) {
 
     res.redirect('/dashboard/login')
 }
+
 module.exports = router

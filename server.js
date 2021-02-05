@@ -11,6 +11,7 @@ const methodOverride = require('method-override')
 const bodyParser = require('body-parser')
 
 const indexRouter = require('./routes/index')
+const apiRouter = require('./routes/api')
 const bundlesRouter = require('./routes/bundles')
 const dashBoardRouter = require('./routes/dashboard')
 
@@ -31,6 +32,8 @@ db.on('error', error => console.error(error))
 db.once('open', () => console.log('Connected to Mongoose'))
 
 app.use(flash())
+app.use(express.json())
+
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
@@ -39,6 +42,7 @@ app.use(session({
 app.use(passport.initialize())
 app.use(passport.session())
 app.use('/', indexRouter)
+app.use('/api', apiRouter)
 app.use('/dashboard', dashBoardRouter)
 app.use('/bundles', bundlesRouter)
 

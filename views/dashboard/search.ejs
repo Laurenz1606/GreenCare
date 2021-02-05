@@ -1,0 +1,31 @@
+<div class="container">
+    <%- include('dashheader') %>
+    <% if (error) { %>
+      <div class="alert alert-danger" role="alert">
+      <%= message %>
+    </div>
+      <% } %>
+        <form action="/dashboard/search" method="POST">
+            <div class="form-group">
+                <label for="search">Suche</label>
+                <input value="<%= val %>" class="form-control" type="text" id="search" name="search" placeholder="Name" required>
+            </div>
+        </form>
+        <% users.forEach(user => { %>
+            <div class="card mb-4">
+                    <div class="card-body">
+                        <h4 class="card-title text-decoration-none">
+                            <%= user.name %>
+                        </h4>
+                        <div class="card-subtitle card-text text-muted">
+                            <%= user.email %>
+                        </div>
+                    </div>
+            </div>
+        <% }) %>
+        <% if(users.length < 1) { %>
+      <div class="alert alert-danger" role="alert">
+          Keinen Benutzer mit deinen Daten gefunden, überprüfe nochmal deine Eingabe.
+      </div>
+        <% } %>
+</div>

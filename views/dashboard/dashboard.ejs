@@ -14,10 +14,12 @@
             </div>
             <% } %>
         <% if(locals.bundle) { %>
-            <div class="card mx-5 my-3">
-            <a href="/dashboard/bundle">Dein Bundle</a>
+            <div class="card mx-5 my-3 px-4 py-4">
+            <form action="/dashboard/bundle" method="GET">
+                <button class="btn btn-success">Dein Bundle</button>
+            </form>
             <form action="/dashboard/leave?_method=DELETE" method="POST">
-                <button type="submit">Leave bundle</button>
+                <button type="submit" class="btn btn-danger">Leave bundle</button>
             </form>
     </div>
             <% } else {%>

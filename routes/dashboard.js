@@ -7,6 +7,7 @@ const passport = require('passport')
 const User = require('../models/user')
 const Bundle = require('../models/bundle')
 const mongoose = require('mongoose')
+const { v4: uuidv4 } = require('uuid');
 
 const initializePassport = require('./passport/passport-config')
 const { findById } = require('../models/user')
@@ -32,8 +33,7 @@ router.get('/edit', checkAuthenticated, async (req, res) => {
 router.post('/updateUserinfo', checkAuthenticated, async (req, res) => {
     let usr = await req.user
     usr.name = req.body.name
-    console.log(req.body.private)
-    if(req.body.private == 'on') {
+    if (req.body.private == 'on') {
         usr.private = true
     } else {
         usr.private = false
@@ -72,6 +72,56 @@ router.get('/', checkAuthenticated, async (req, res) => {
         leaveDisable: leaveError,
         alredy: alredy
     }))
+})
+
+router.get('/search', checkAuthenticated, async (req, res) => {
+    res.render('dashboard/search', Object.assign({}, res.locals, {
+        title: 'Dashboard',
+        bundles: bundles,
+        users: [],
+        error: false,
+        val: ""
+    }))
+})
+
+router.post('/search', checkAuthenticated, async (req, res) => {
+    if (req.body.search.length >= 8) {
+        let users = await User.find({ name: new RegExp(req.body.search) })
+        let emails = await User.find({ email: new RegExp(req.body.search) })
+        if (users.length > 0) {
+            emails.forEach(emailUser => {
+                var inc = false
+                for (var i = 0; i < users.length; i++) {
+                    if (emailUser._id.toString() == users[i]._id.toString()) {
+                        inc = true
+                    }
+                }
+                if (!inc) {
+                    users.push(emailUser)
+                }
+            })
+        } else {
+            emails.forEach(emailUser => {
+                users.push(emailUser)
+            })
+        }
+        res.render('dashboard/search', Object.assign({}, res.locals, {
+            title: 'Suche',
+            bundles: bundles,
+            users: users,
+            error: false,
+            val: req.body.search
+        }))
+    } else {
+        res.render('dashboard/search', Object.assign({}, res.locals, {
+            title: 'Suche',
+            bundles: bundles,
+            users: [],
+            error: true,
+            message: "Gebe mindestens 8 Buchstaben ein",
+            val: req.body.search
+        }))
+    }
 })
 
 router.get('/bundle', checkAuthenticated, async (req, res) => {
@@ -177,7 +227,9 @@ router.post('/register', checkNotAuthenticated, async (req, res) => {
             email: req.body.email,
             password: hashedPassword,
             activated: false,
-            private: false
+            private: false,
+            apiToken: uuidv4(),
+            points: between(0, 100)
         })
         const newUser = await user.save()
         res.redirect('/dashboard/login')

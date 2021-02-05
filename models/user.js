@@ -23,6 +23,14 @@ const userSchema = new mongoose.Schema({
     private: {
         type: Boolean,
         required: true
+    }, 
+    apiToken: {
+        type: String,
+        required: true
+    }, 
+    points: {
+        type: Number,
+        required: true
     }
 })
 
