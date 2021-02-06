@@ -1,7 +1,7 @@
 <div class="container">
     <%- include('dashheader') %>
     <% if (error) { %>
-      <div class="alert alert-danger" role="alert">
+      <div class="alert alert-danger mt-3" role="alert">
       <%= message %>
     </div>
       <% } %>
@@ -23,7 +23,7 @@
                     </div>
             </div>
         <% }) %>
-        <% if(users.length < 1) { %>
+        <% if(noResult) { %>
       <div class="alert alert-danger" role="alert">
           Keinen Benutzer mit deinen Daten gefunden, überprüfe nochmal deine Eingabe.
       </div>

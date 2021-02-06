@@ -80,14 +80,15 @@ router.get('/search', checkAuthenticated, async (req, res) => {
         bundles: bundles,
         users: [],
         error: false,
-        val: ""
+        val: "",
+        noResult: false
     }))
 })
 
 router.post('/search', checkAuthenticated, async (req, res) => {
-    if (req.body.search.length >= 8) {
-        let users = await User.find({ name: new RegExp(req.body.search) })
-        let emails = await User.find({ email: new RegExp(req.body.search) })
+    if (req.body.search.length > 7) {
+        let users = await User.find({ name: new RegExp(req.body.search), private: false })
+        let emails = await User.find({ email: new RegExp(req.body.search), private: false })
         if (users.length > 0) {
             emails.forEach(emailUser => {
                 var inc = false
@@ -105,13 +106,26 @@ router.post('/search', checkAuthenticated, async (req, res) => {
                 users.push(emailUser)
             })
         }
-        res.render('dashboard/search', Object.assign({}, res.locals, {
-            title: 'Suche',
-            bundles: bundles,
-            users: users,
-            error: false,
-            val: req.body.search
-        }))
+        if (users.length == 0) {
+            res.render('dashboard/search', Object.assign({}, res.locals, {
+                title: 'Suche',
+                bundles: bundles,
+                users: users,
+                error: false,
+                val: req.body.search,
+                noResult: true
+            }))
+        } else {
+            res.render('dashboard/search', Object.assign({}, res.locals, {
+                title: 'Suche',
+                bundles: bundles,
+                users: users,
+                error: false,
+                message: "Gebe mindestens 8 Buchstaben ein",
+                val: req.body.search,
+                noResult: false
+            }))
+        }
     } else {
         res.render('dashboard/search', Object.assign({}, res.locals, {
             title: 'Suche',
@@ -119,7 +133,8 @@ router.post('/search', checkAuthenticated, async (req, res) => {
             users: [],
             error: true,
             message: "Gebe mindestens 8 Buchstaben ein",
-            val: req.body.search
+            val: req.body.search,
+            noResult: false
         }))
     }
 })
@@ -393,6 +408,23 @@ router.delete('/leave', checkAuthenticated, async (req, res) => {
     } else {
         res.redirect('/dashboard')
     }
+})
+
+router.delete('/delete', checkAuthenticated, async (req, res) => {
+    let usr = await req.user
+    // console.log(req.query.id)
+    // console.log(usr._id)
+    if (req.body.admin == usr._id) {
+        let reqBundle = await Bundle.findById(req.query.id)
+        for (const acc of reqBundle.LinkedAccs) {
+            let macc = await User.findById(acc)
+            macc.activated = false
+            macc.linked = ""
+            await macc.save()
+        }
+        await reqBundle.remove()
+    }
+    res.redirect('/dashboard')
 })
 
 router.delete('/bundle/user', checkAuthenticated, async (req, res) => {

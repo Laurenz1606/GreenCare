@@ -1,107 +1,142 @@
 <div class="container">
-    <%- include('dashheader') %> 
-    <% if (isdeleted==true) { %>
-        <div class="alert alert-danger alert-dismissible fade show mt-4">
-            <button type="button" class="close" data-dismiss="alert">&times;</button>
-            <strong>Benutzer Entfernt!</strong> Der benutzer <%= deletedUser.name %> wurde aus deinem Bundle entfernt.
-        </div>
-        <% } %>
-            <div class="card mb-4 mt-3">
-                <div class="card-body">
-                    <h2 class="card-title text-center">
-                        <%= locals.bundle.Name %>
-                    </h2>
-                    <div class="card-subtitle text-dark">
-                        <p>Bundle-Art: <%= type %>
-                        </p>
-                        <span>Benutzer: </span>
-                            <div class="progress" style="height:20px">
-                                <div id="prb" class="progress-bar bg-success" style="height:20px"><%= linkedUsers %> / <%= users %></div>
+    <%- include('dashheader') %>
+        <% if (isdeleted==true) { %>
+            <div class="alert alert-danger alert-dismissible fade show mt-4">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <strong>Benutzer Entfernt!</strong> Der benutzer <%= deletedUser.name %> wurde aus deinem Bundle
+                    entfernt.
+            </div>
+            <% } %>
+                <div class="card mb-4 mt-3">
+                    <div class="card-body">
+                        <h2 class="card-title text-center">
+                            <%= locals.bundle.Name %>
+                        </h2>
+                        <div class="card-subtitle text-dark">
+                            <p>Bundle-Art: <%= type %>
+                            </p>
+                            <span>Benutzer: </span>
+                            <div class="progress" style="height:30px">
+                                <div id="prb" class="progress-bar bg-success" style="height: 30px">
+                                    <%= linkedUsers %> / <%= users %>
+                                </div>
                             </div>
-                        </p>
-                        <% if (users !=1) { %>
-                            <% if (admin) { %>
-                                <span>Join Link:</span>
-                                <a class="card-text" href="https://join.green-care.info/<%= id %>">join.green-care.info/<%= id %></a>
-                                <p class="hide" id="copy">Hey, trete doch meinem green-care Bundle bei join.green-care.info/<%= id %> der Token ist <%= token %></p>
-                                <p class="mb-1 mt-2">Token:</p>
-                                <h3 id="p2" class="mb-3">
-                                    <%= token %>
-                                </h3>
-                                <button class="btn btn-success" onclick="copyToClipboard('#copy')">Einladung
-                                    kopieren</button>
-                                <% } %>
+                            </p>
+                                <% if (admin) { %>
+                                    <span>Join Link:</span>
+                                    <a class="card-text"
+                                        href="https://join.green-care.info/<%= id %>">join.green-care.info/<%= id %></a>
+                                    <p class="hide" id="copy">Hey, trete doch meinem green-care Bundle bei: https://join.green-care.info/<%= id %> der Token ist <%= token %>
+                                    </p>
+                                    <p class="mb-1 mt-2">Token:</p>
+                                    <h3 id="p2" class="mb-3">
+                                        <%= token %>
+                                    </h3>
+                                    <button class="btn btn-success" onclick="copyToClipboard('#copy')">Einladung
+                                        kopieren</button>
+                                    <button type="button" class="btn btn-danger" data-toggle="modal"
+                                        data-target="#deleteModal">
+                                        Bundle Löschen
+                                    </button>
+                                    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog"
+                                        aria-labelledby="deleteModalTitle" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="deleteModalTitle">Bundle Löschen
+                                                    </h5>
+                                                    <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    Bist du dir sicher das du dein Bundle Löschen möchtest? Alle
+                                                    abgerechneten Monate werden nicht zurückerstattet und alle
+                                                    Teilnehmer aus dem Bundle entfernt.
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-dismiss="modal">Abbrechen</button>
+                                                    <form method="POST" action="/dashboard/delete?_method=DELETE&id=<%= id %>">
+                                                        <input name="admin" hidden type="text" value="<%= adminID %>">
+                                                        <button type="submit" class="btn btn-danger">Entgültig Löschen</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <% } %>
-                                        <script>
-                                            function copyToClipboard(element) {
-                                                var $temp = $("<input>");
-                                                $("body").append($temp);
-                                                $temp.val($(element).text()).select();
-                                                document.execCommand("copy");
-                                                $temp.remove();
-                                            }
-                                        </script>
+                                            <script>
+                                                function copyToClipboard(element) {
+                                                    var $temp = $("<input>");
+                                                    $("body").append($temp);
+                                                    $temp.val($(element).text()).select();
+                                                    document.execCommand("copy");
+                                                    $temp.remove();
+                                                }
+                                            </script>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <script>
-                var progress = document.getElementById("prb");
-                var point = <%= linkedUsers %>;
-                var maxpoint = <%= users %>;
-                function gfg_Run() {
-                    // value = value + 1;
-                    // if (value > 100) {
-                    //     value = 0
-                    // }
-                    // console.log(value)
-                    progress.innerHTML = point + " / " + maxpoint
-                    progress.style["width"] = (point/maxpoint)*100 + "%";
-                }
-                setInterval("gfg_Run()", 100);
-            </script>
-            <h4>Benutzer:</h4>
-            <table class="table table-striped table-hover">
-                <thead>
-                </thead>
-                <tbody>
-                    <tr class="bundleuser__list">
-                        <th>Admin</th>
-                        <th scope="col">
-                            <%= locals.bundle.users[0].name %>
-                        </th>
-                        <th scope="col">
-                            <%= locals.bundle.users[0].email %>
-                        </th>
-                        <% if (admin) { %>
-                            <th scope="col"></th>
-                            <% } %>
-                    </tr>
-                    <% for( let i=1; i < locals.bundle.users.length; i++ ) { %>
+                <script>
+                    var progress = document.getElementById("prb");
+                    var point = <%= linkedUsers %>;
+                    var maxpoint = <%= users %>;
+                    function gfg_Run() {
+                        // value = value + 1;
+                        // if (value > 100) {
+                        //     value = 0
+                        // }
+                        // console.log(value)
+                        progress.innerHTML = point + " / " + maxpoint
+                        progress.style["width"] = (point / maxpoint) * 100 + "%";
+                    }
+                    setInterval("gfg_Run()", 100);
+                </script>
+                <h4>Benutzer:</h4>
+                <table class="table table-striped table-hover">
+                    <thead>
+                    </thead>
+                    <tbody>
                         <tr class="bundleuser__list">
-                            <td>Benutzer</td>
-                            <td>
-                                <%= locals.bundle.users[i].name %>
-                            </td>
-                            <td>
-                                <%= locals.bundle.users[i].email %>
-                            </td>
+                            <th>Admin</th>
+                            <th scope="col">
+                                <%= locals.bundle.users[0].name %>
+                            </th>
+                            <th scope="col">
+                                <%= locals.bundle.users[0].email %>
+                            </th>
                             <% if (admin) { %>
-                                <td>
-                                    <form action="/dashboard/bundle/user?_method=DELETE" method="POST">
-                                        <input name="id" type="hidden" value="<%= locals.bundle.users[i]._id %>">
-                                        <input name="Admin" type="hidden" value="<%= locals.adminID %>">
-                                        <button class="btn btn-danger cross-button" type="submit">
-                                            <i class="material-icons cross-icon">close</i></button>
-                                    </form>
-                                </td>
+                                <th scope="col"></th>
                                 <% } %>
                         </tr>
+                        <% for( let i=1; i < locals.bundle.users.length; i++ ) { %>
+                            <tr class="bundleuser__list">
+                                <td>Benutzer</td>
+                                <td>
+                                    <%= locals.bundle.users[i].name %>
+                                </td>
+                                <td>
+                                    <%= locals.bundle.users[i].email %>
+                                </td>
+                                <% if (admin) { %>
+                                    <td>
+                                        <form action="/dashboard/bundle/user?_method=DELETE" method="POST">
+                                            <input name="id" type="hidden" value="<%= locals.bundle.users[i]._id %>">
+                                            <input name="Admin" type="hidden" value="<%= locals.adminID %>">
+                                            <button class="btn btn-danger cross-button" type="submit">
+                                                <i class="material-icons cross-icon">close</i></button>
+                                        </form>
+                                    </td>
+                                    <% } %>
+                            </tr>
+                            <% } %>
+                    </tbody>
+                </table>
+                <span class="show-on-mobile text-muted">
+                    <% if (admin) { %>
+                        Zum bearbeiten der User benutze einen PC
                         <% } %>
-                </tbody>
-            </table>
-            <span class="show-on-mobile text-muted">
-                <% if (admin) { %>
-                    Zum bearbeiten der User benutze einen PC
-                    <% } %>
-            </span>
+                </span>
 </div>
