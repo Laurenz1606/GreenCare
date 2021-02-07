@@ -5,6 +5,9 @@
       <%= message %>
     </div>
       <% } %>
+    <% if (addSuc) { %>
+        <div class="alert alert-success mt-3" role="alert">Freundschaftsanfrage erfolgreich verschickt!</div>
+    <% } %>
         <form action="/dashboard/search" method="POST">
             <div class="form-group">
                 <label for="search">Suche</label>
@@ -19,6 +22,12 @@
                         </h4>
                         <div class="card-subtitle card-text text-muted">
                             <%= user.email %>
+                        </div>
+                        <div>
+                            <form action="/dashboard/addfriend" method="POST">
+                                <input type="text" hidden name="id" value="<%= user._id %>">
+                            <button type="submit" class="btn btn-success">Freund Hinzufügen</a>
+                        </form>
                         </div>
                     </div>
             </div>

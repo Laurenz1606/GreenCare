@@ -31,6 +31,15 @@ const userSchema = new mongoose.Schema({
     points: {
         type: Number,
         required: true
+    },
+    friends: {
+        type: [String]
+    },
+    friendReqs: {
+        type: [String]
+    },
+    pendigReqs: {
+        type: [String]
     }
 })
 

@@ -1,3 +1,12 @@
+
+// Standard res.render
+
+// res.render('dashboard/search', Object.assign({}, res.locals, {
+//     title: 'Example Title',
+//     bundles: bundles
+// }))
+
+
 const dotenv = require('dotenv').config()
 const bcrypt = require('bcrypt')
 const express = require('express')
@@ -74,21 +83,26 @@ router.get('/', checkAuthenticated, async (req, res) => {
     }))
 })
 
+
+
 router.get('/search', checkAuthenticated, async (req, res) => {
     res.render('dashboard/search', Object.assign({}, res.locals, {
-        title: 'Dashboard',
+        title: 'Suche',
         bundles: bundles,
         users: [],
         error: false,
         val: "",
-        noResult: false
+        noResult: false,
+        addSuc: false,
+        alredyReq: false
     }))
 })
 
 router.post('/search', checkAuthenticated, async (req, res) => {
     if (req.body.search.length > 7) {
-        let users = await User.find({ name: new RegExp(req.body.search), private: false })
-        let emails = await User.find({ email: new RegExp(req.body.search), private: false })
+        let usr = await req.user
+        let users = await User.find({ name: new RegExp(req.body.search, "i"), private: false })
+        let emails = await User.find({ email: new RegExp(req.body.search, "i"), private: false })
         if (users.length > 0) {
             emails.forEach(emailUser => {
                 var inc = false
@@ -106,6 +120,13 @@ router.post('/search', checkAuthenticated, async (req, res) => {
                 users.push(emailUser)
             })
         }
+        let userIndex
+        for (const user of users) {
+            if (user._id.toString() == usr._id.toString()) {
+                userIndex = users.indexOf(user)
+                users.splice(userIndex, 1);
+            }
+        }
         if (users.length == 0) {
             res.render('dashboard/search', Object.assign({}, res.locals, {
                 title: 'Suche',
@@ -113,7 +134,9 @@ router.post('/search', checkAuthenticated, async (req, res) => {
                 users: users,
                 error: false,
                 val: req.body.search,
-                noResult: true
+                noResult: true,
+                addSuc: false,
+                alredyReq: false
             }))
         } else {
             res.render('dashboard/search', Object.assign({}, res.locals, {
@@ -123,7 +146,9 @@ router.post('/search', checkAuthenticated, async (req, res) => {
                 error: false,
                 message: "Gebe mindestens 8 Buchstaben ein",
                 val: req.body.search,
-                noResult: false
+                noResult: false,
+                addSuc: false,
+                alredyReq: false
             }))
         }
     } else {
@@ -134,9 +159,86 @@ router.post('/search', checkAuthenticated, async (req, res) => {
             error: true,
             message: "Gebe mindestens 8 Buchstaben ein",
             val: req.body.search,
-            noResult: false
+            noResult: false,
+            addSuc: false,
+            alredyReq: false
         }))
     }
+})
+
+router.post('/addfriend', checkAuthenticated, async (req, res) => {
+    let usr = await req.user
+    usr = await User.findById(usr._id)
+    let add = await User.findById(req.body.id)
+    console.log(usr)
+    if (usr.pendigReqs.includes(add._id)) {
+        res.render('dashboard/search', Object.assign({}, res.locals, {
+            title: 'Suche',
+            bundles: bundles,
+            users: [],
+            error: true,
+            message: 'Du hast diesem Benutzer schon eine Anfrage geschickt!',
+            val: "",
+            noResult: false,
+            addSuc: false,
+        }))
+    }
+    else if (usr.friendReqs.includes(add._id)) {
+        res.render('dashboard/search', Object.assign({}, res.locals, {
+            title: 'Suche',
+            bundles: bundles,
+            users: [],
+            error: true,
+            message: 'Du hast eine offene Anfrage von diesem Benutzer!',
+            val: "",
+            noResult: false,
+            addSuc: false,
+        }))
+    }
+    else if (usr.friends.includes(add._id)) {
+        res.render('dashboard/search', Object.assign({}, res.locals, {
+            title: 'Suche',
+            bundles: bundles,
+            users: [],
+            error: true,
+            message: 'Ihr seid bereits befreundet!',
+            val: "",
+            noResult: false,
+            addSuc: false,
+        }))
+    } else {
+        usr.pendigReqs.push(req.body.id)
+        let updatedUser = await usr.save()
+        add.friendReqs.push(usr._id)
+        let addUser = add.save()
+        res.redirect('/dashboard/friends')
+    }
+})
+
+router.get('/friends', checkAuthenticated, async (req, res) => {
+    let usr = await req.user
+    let pending = []
+    let requests = []
+    let friends = []
+    for(const pend of usr.pendigReqs) {
+        let curr = await User.findById(pend)
+        pending.push(curr)
+    }
+    for(const reqs of usr.friendReqs) {
+        let curr = await User.findById(reqs)
+        requests.push(curr)
+    }
+    for(const friend of usr.friends) {
+        let curr = await User.findById(friend)
+        friends.push(curr)
+    }
+    res.render('dashboard/friends', Object.assign({}, res.locals, {
+        title: 'Example Title',
+        bundles: bundles,
+        pendig: pending,
+        requests: requests,
+        friends: friends
+    }))
 })
 
 router.get('/bundle', checkAuthenticated, async (req, res) => {
@@ -211,6 +313,24 @@ router.get('/bundle', checkAuthenticated, async (req, res) => {
             }))
         }
     } else res.redirect('/dashboard')
+})
+
+router.post('/friend/accept/:id', checkAuthenticated, async(req, res) => {
+    try {
+        let usr = await req.user
+        usr = await User.findById(usr._id)
+        let friend = await User.findById(req.params.id)
+        usr.friendReqs = usr.friendReqs.filter(v => v != friend._id)
+        usr.friends.push(friend._id)
+        await usr.save()
+        friend.pendigReqs = friend.pendigReqs.filter(v => v != usr._id)
+        friend.friends.push(usr._id)
+        await friend.save()
+        res.redirect('/dashboard/friends')
+    } catch (error) {
+        console.log(error)
+        res.redirect('/dashboard')
+    }
 })
 
 router.get('/login', checkNotAuthenticated, (req, res) => {
@@ -412,8 +532,6 @@ router.delete('/leave', checkAuthenticated, async (req, res) => {
 
 router.delete('/delete', checkAuthenticated, async (req, res) => {
     let usr = await req.user
-    // console.log(req.query.id)
-    // console.log(usr._id)
     if (req.body.admin == usr._id) {
         let reqBundle = await Bundle.findById(req.query.id)
         for (const acc of reqBundle.LinkedAccs) {

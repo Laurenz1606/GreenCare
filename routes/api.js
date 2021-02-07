@@ -72,10 +72,4 @@ router.post('/userinfo', async (req, res) => {
     }
 })
 
-// //Get all users
-// router.get('/users', async (req, res) => {
-//     data = await User.find({ private: false })
-//     res.status(201).json(data)
-// })
-
 module.exports = router

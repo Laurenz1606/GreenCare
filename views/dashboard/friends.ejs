@@ -1,0 +1,18 @@
+<div class="container">
+    <div>
+    Asugehende Anfragen
+<% pendig.forEach(pend=> { %>
+    <%= pend.name %>
+<% }) %></div>    <div>
+    Eingehende Einfragen
+<% requests.forEach(req=> { %>
+    <%= req.name %>
+    <form action="/dashboard/friend/accept/<%= req._id %>" method="POST">
+        <button type="submit">Accept friend</button>
+    </form>
+<% }) %>  </div>    <div>
+    Freunde
+<% friends.forEach(frnd=> { %>
+    <%= frnd.name %>
+<% }) %> </div>  
+</div>
