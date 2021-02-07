@@ -2,14 +2,5 @@ POST  https://green-care.info/api/userinfo
 Content-Type: application/json
 
 {
-    "token": "a4d44b0e-0eff-47a3-847f-e8a039436fe6"
-}
-
-###
-
-POST https://green-care.info/api/user
-Content-Type: application/json
-
-{
-    "token": "a4d44b0e-0eff-47a3-847f-e8a039436fe6"
+    "token": "e1af21b9-ab91-4b99-badc-484a43e4986c"
 }
